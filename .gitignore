@@ -1,0 +1,10 @@
+.metadata/
+.vscode/
+node_modules/
+
+platforms/android/*.jar
+platforms/android/jniLibs/
+*.tgz
+*.log
+
+test/platforms/

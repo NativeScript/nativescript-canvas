@@ -1,0 +1,5 @@
+.npmignore
+platforms/android/src/
+test/
+prepackage.js
+*.tgz

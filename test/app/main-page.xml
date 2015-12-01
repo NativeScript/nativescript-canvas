@@ -1,0 +1,9 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
+  xmlns:canvas="tns_modules/nativescript-canvas/canvas">
+  <StackLayout>
+    <Label text="Tap the button" class="title"/>
+    <Button text="TAP" tap="{{ tapAction }}" />
+    <Label text="{{ message }}" class="message" textWrap="true"/>
+    <canvas:Canvas id="canvas"/>
+  </StackLayout>
+</Page>

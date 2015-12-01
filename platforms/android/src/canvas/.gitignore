@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.gradle
+
+local.properties
+
+gen/
+armeabi-v7a/
+obj/
+bin/
+.svn/
+libs/x86/
+
+libskia_android.a
