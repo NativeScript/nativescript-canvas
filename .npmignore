@@ -1,5 +1,9 @@
 .npmignore
 platforms/android/src/
+platforms/ios/src/
+
 test/
+
 prepackage.js
 *.tgz
+*.log

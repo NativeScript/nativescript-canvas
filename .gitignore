@@ -4,7 +4,9 @@ node_modules/
 
 platforms/android/*.jar
 platforms/android/jniLibs/
+
 *.tgz
 *.log
+.DS_Store
 
 test/platforms/

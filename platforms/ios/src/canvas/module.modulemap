@@ -1,0 +1,6 @@
+framework module canvas {
+  umbrella header "CanvasRenderingContext2d.h"
+
+  export *
+  module * { export * }
+}
