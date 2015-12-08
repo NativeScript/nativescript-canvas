@@ -10,3 +10,4 @@ platforms/android/jniLibs/
 .DS_Store
 
 test/platforms/
+test/lib/

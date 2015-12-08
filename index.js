@@ -1,7 +1,5 @@
 var view = require('ui/core/view');
-console.log('before CanvasView');
-var CanvasView = require('./CanvasView').CanvasView;
-console.log('after CanvasView');
+var canvasViewLib = require('./CanvasView'); 
 
 function Canvas() {
 	view.View.call(this);
@@ -10,8 +8,8 @@ function Canvas() {
 }
 __extends(Canvas, view.View);
 
-Canvas.prototype.getContext = function getContext(whichContext) {
-	return this._android.getContext(whichContext);
+Canvas.prototype.getContext = function getContext(kind) {
+	return this._native.getContext(kind);
 }
 
 Canvas.prototype._draw = function _draw(canvas) {
@@ -21,20 +19,21 @@ Canvas.prototype._draw = function _draw(canvas) {
 }
 
 Canvas.prototype._onSizeChanged = function _onSizeChanged(width, height) {
-	if (this._drawingContext) {
-		this._drawingContext._initializeBackbuffer(width, height);
+	if (this._native) {
+		this._native.setSize(width, height);
 	}
 }
 
-Canvas.prototype.onLayout = function onLayout(left, right, top, bottom) {
-	view.View.onLayout.apply(this, arguments);
-	this._onSizeChanged(right - left, top - bottom);
+Canvas.prototype.onLayout = function onLayout(left, top, right, bottom) {
+	view.View.prototype.onLayout.apply(this, arguments);
+	this._onSizeChanged(right - left, bottom - top);
 }
 
 Canvas.prototype._createUI = function _createUI() {
-	var view = new CanvasView(this._context);
+	console.log('Creating CanvasView');
+	var view = canvasViewLib.createView(1, 1);
 	view._scriptCanvas = this;
-	this._android = view;
+	this._native = view;
 }
 
 Object.defineProperty(Canvas.prototype, "offsetWidth", {
@@ -45,8 +44,13 @@ Object.defineProperty(Canvas.prototype, "offsetHeight", {
 	get: function () { return this.height; },
 });
 
-Object.defineProperty(Canvas.prototype, "android", {
-	get: function () { return this._android; },
+Object.defineProperty(Canvas.prototype, canvasViewLib.platform, {
+	get: function () {
+		if (!this._native) {
+			this._createUI();
+		}
+		return this._native;
+	}
 });
 
 exports.Canvas = Canvas;

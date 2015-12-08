@@ -21,8 +21,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		BF42575D1C17181F00E15E71 /* canvas.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF42575C1C17137D00E15E71 /* canvas.h */; };
 		BF6DBD841C109B9800FC37E0 /* CanvasRenderingContext2d.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF6DBD831C109B9800FC37E0 /* CanvasRenderingContext2d.h */; };
-		BF6DBD861C109B9800FC37E0 /* CanvasRenderingContext2d.m in Sources */ = {isa = PBXBuildFile; fileRef = BF6DBD851C109B9800FC37E0 /* CanvasRenderingContext2d.m */; };
+		BF6DBD861C109B9800FC37E0 /* CanvasRenderingContext2d.mm in Sources */ = {isa = PBXBuildFile; fileRef = BF6DBD851C109B9800FC37E0 /* CanvasRenderingContext2d.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,6 +33,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				BF42575D1C17181F00E15E71 /* canvas.h in CopyFiles */,
 				BF6DBD841C109B9800FC37E0 /* CanvasRenderingContext2d.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -41,9 +43,10 @@
 /* Begin PBXFileReference section */
 		BF42575A1C16EEAB00E15E71 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = Info.plist; sourceTree = "<group>"; };
 		BF42575B1C16F61E00E15E71 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		BF42575C1C17137D00E15E71 /* canvas.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = canvas.h; sourceTree = "<group>"; };
 		BF6DBD801C109B9800FC37E0 /* libcanvas.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcanvas.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF6DBD831C109B9800FC37E0 /* CanvasRenderingContext2d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CanvasRenderingContext2d.h; sourceTree = "<group>"; };
-		BF6DBD851C109B9800FC37E0 /* CanvasRenderingContext2d.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CanvasRenderingContext2d.m; sourceTree = "<group>"; };
+		BF6DBD851C109B9800FC37E0 /* CanvasRenderingContext2d.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CanvasRenderingContext2d.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,7 +82,8 @@
 				BF42575B1C16F61E00E15E71 /* module.modulemap */,
 				BF42575A1C16EEAB00E15E71 /* Info.plist */,
 				BF6DBD831C109B9800FC37E0 /* CanvasRenderingContext2d.h */,
-				BF6DBD851C109B9800FC37E0 /* CanvasRenderingContext2d.m */,
+				BF6DBD851C109B9800FC37E0 /* CanvasRenderingContext2d.mm */,
+				BF42575C1C17137D00E15E71 /* canvas.h */,
 			);
 			path = canvas;
 			sourceTree = "<group>";
@@ -160,7 +164,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF6DBD861C109B9800FC37E0 /* CanvasRenderingContext2d.m in Sources */,
+				BF6DBD861C109B9800FC37E0 /* CanvasRenderingContext2d.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

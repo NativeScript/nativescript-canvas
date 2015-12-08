@@ -1,4 +1,5 @@
-exports.CanvasView = com.tns.CanvasViewBase.extend({
+exports.platform = 'android';
+var CanvasView = com.tns.CanvasViewBase.extend({
 	__drawImpl: function (pixelsPtrLow, pixelsPtrHigh, w, h) {
 		if (this.onFrame) {
 			this.onFrame();
@@ -136,3 +137,6 @@ exports.CanvasView = com.tns.CanvasViewBase.extend({
     },
 });
 
+exports.createView = function createView(width, height) {
+    return new CanvasView();
+}

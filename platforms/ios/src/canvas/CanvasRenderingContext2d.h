@@ -1,6 +1,11 @@
 #import <Foundation/Foundation.h>
 
 @interface __CanvasRenderingContext2D : NSObject
+@property NSString* fillStyle;
+
 -(void)setWidth:(int)width height:(int)height;
--(void)fillRectX:(float)x Y:(float)y W:(float)width H:(float)height;
+-(void)__draw;
+
+-(void)fillRect:(float)x :(float)y :(float)width :(float)height;
+
 @end
