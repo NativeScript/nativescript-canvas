@@ -4,10 +4,10 @@ var cp = require('child_process');
 var mkdirp = require('mkdirp');
 var Q = require('q');
 
-function findTool(envVar, name, suffix) {
+function findTool(envVar, localPath, name, suffix) {
 	var toolingPath = process.env[envVar];
 	return toolingPath
-		? '"' + path.join(toolingPath, name + (process.platform === 'win32' ? suffix : '')) + '"'
+		? '"' + path.join(toolingPath, localPath, name + (process.platform === 'win32' ? suffix : '')) + '"'
 		: name;
 }
 
@@ -35,8 +35,8 @@ process.chdir(path.join(projectDir, 'platforms/android/src/canvas'));
 
 Qexec('npm install')
 	.then(function () { return Qexec('grunt'); })
-	.then(function () { return Qexec(findTool('ANDROID_NDK_PATH', 'ndk-build', '.cmd') + ' all'); })
-	.then(function () { return Qexec(findTool('ANT_HOME', path.join('bin', 'ant'), '.bat') + ' release') })
+	.then(function () { return Qexec(findTool('ANDROID_NDK_PATH', '', 'ndk-build', '.cmd') + ' all'); })
+	.then(function () { return Qexec(findTool('ANT_HOME', 'bin', 'ant', '.bat') + ' release'); })
 	.then(function () {
 		process.chdir(projectDir);
 		var filesToCopy = [
