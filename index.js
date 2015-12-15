@@ -1,5 +1,5 @@
 var view = require('ui/core/view');
-var canvasViewLib = require('./CanvasView'); 
+var canvasViewLib = require('./CanvasView');
 
 function Canvas() {
 	view.View.call(this);
@@ -31,7 +31,7 @@ Canvas.prototype.onLayout = function onLayout(left, top, right, bottom) {
 
 Canvas.prototype._createUI = function _createUI() {
 	console.log('Creating CanvasView');
-	var view = canvasViewLib.createView(1, 1);
+	var view = canvasViewLib.createView(1, 1, this._context);
 	view._scriptCanvas = this;
 	this._native = view;
 }
@@ -46,7 +46,7 @@ Object.defineProperty(Canvas.prototype, "offsetHeight", {
 
 Object.defineProperty(Canvas.prototype, canvasViewLib.platform, {
 	get: function () {
-		if (!this._native) {
+		if (!this._native && canvasViewLib.platform === 'ios') {
 			this._createUI();
 		}
 		return this._native;

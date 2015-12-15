@@ -14,11 +14,6 @@ public abstract class CanvasViewBase extends View
 {
 	private Bitmap bitmap;
 	
-	static
-	{
-		System.loadLibrary("canvas");
-	}
-	
 	public CanvasViewBase(Context context)
 	{
 		super(context);
@@ -90,6 +85,8 @@ public abstract class CanvasViewBase extends View
 	
 	static
 	{
+		System.loadLibrary("canvas");
+
 		pointerActions.put(MotionEvent.ACTION_HOVER_ENTER, "mouseenter");
 		pointerActions.put(MotionEvent.ACTION_HOVER_MOVE, "mousemove");
 		pointerActions.put(MotionEvent.ACTION_HOVER_EXIT, "mouseleave");

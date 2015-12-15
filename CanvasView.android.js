@@ -4,7 +4,9 @@ var CanvasView = com.tns.CanvasViewBase.extend({
 		if (this.onFrame) {
 			this.onFrame();
 		}
-		this.__context.__draw(pixelsPtrLow, pixelsPtrHigh, w, h);
+		if (this.__context) {
+			this.__context.__draw(pixelsPtrLow, pixelsPtrHigh, w, h);
+		}
 	},
 
     __sizeChangedImpl: function (l, t, w, h) {
@@ -21,7 +23,9 @@ var CanvasView = com.tns.CanvasViewBase.extend({
         if (this.onLoaded) {
             this.onLoaded();
         }
-		this.__context.__sizeChanged(w, h);
+		if (this.__context) {
+			this.__context.__sizeChanged(w, h);
+		}
     },
 
     __dispatchMouseEvent: function (name, x, y) {
@@ -96,19 +100,9 @@ var CanvasView = com.tns.CanvasViewBase.extend({
 
 	getContext: function (kind) {
         if (!this.__context) {
-            var arch;
-            var sysArch = java.lang.System.getProperty("os.arch");
-            var lcArch = sysArch.toLowerCase();
-            if (lcArch.indexOf("arm") > -1) {
-                arch = "arm";
-            } else if (lcArch.indexOf("i686") > -1) {
-                arch = "x86";
-            }
-            if (arch) {
-                var native = require("./libcanvas-" + arch + ".so");
-                if (kind === '2d') {
-                    this.__context = native.create2d(this);
-                }
+            var native = require(__dirname + "/../../../../lib/libcanvas.so");
+            if (kind === '2d') {
+                this.__context = native.create2d(this);
             }
         }
         if (this.__context && this.__context.__kind !== kind) {
@@ -136,7 +130,6 @@ var CanvasView = com.tns.CanvasViewBase.extend({
         return this.__boundingRect;
     },
 });
-
-exports.createView = function createView(width, height) {
-    return new CanvasView();
+exports.createView = function createView(width, height, context) {
+    return new CanvasView(context);
 }
