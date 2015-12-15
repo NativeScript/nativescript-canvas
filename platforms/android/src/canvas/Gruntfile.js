@@ -15,6 +15,15 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-zip');
 
-  grunt.registerTask('libs', ['unzip:arm', 'unzip:x86']);
+  var unzipTasks = [];
+  var fs = require('fs');
+  if (!fs.existsSync('jni/libs/arm/libskia_android.a')) {
+    unzipTasks.push('unzip:arm');
+  }
+  if (!fs.existsSync('jni/libs/x86/libskia_android.a')) {
+    unzipTasks.push('unzip:x86');
+  }
+
+  grunt.registerTask('libs', unzipTasks);
   grunt.registerTask('default', ['libs']);
 };
