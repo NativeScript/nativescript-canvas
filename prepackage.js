@@ -30,6 +30,7 @@ function Qexec(command) {
 	return future.promise;
 }
 
+
 var projectDir = process.cwd();
 process.chdir(path.join(projectDir, 'platforms/android/src/canvas'));
 
@@ -37,6 +38,13 @@ Qexec('npm install')
 	.then(function () { return Qexec('grunt'); })
 	.then(function () { return Qexec(findTool('ANDROID_NDK_PATH', '', 'ndk-build', '.cmd') + ' all'); })
 	.then(function () { return Qexec(findTool('ANT_HOME', 'bin', 'ant', '.bat') + ' release'); })
+	.then(function() {
+		if (process.platform !== 'darwin') {
+			return;
+		}
+		process.chdir(path.join(projectDir, 'platforms/ios/src'));
+		return Qexec('xcodebuild -target universal -configuration Release');
+	})
 	.then(function () {
 		process.chdir(projectDir);
 		var filesToCopy = [
@@ -46,9 +54,8 @@ Qexec('npm install')
 		];
 
 		filesToCopy.forEach(function (pair) {
-			mkdirp(path.dirname(pair[0]), function () {
-				fs.writeFileSync(pair[0], fs.readFileSync(pair[1]));
-			});
+			mkdirp.sync(path.dirname(pair[0]));
+			fs.writeFileSync(pair[0], fs.readFileSync(pair[1]));
 		});
 	})
 	.done();
