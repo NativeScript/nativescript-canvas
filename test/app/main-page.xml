@@ -2,7 +2,7 @@
   xmlns:canvas="tns_modules/nativescript-canvas/index">
   <StackLayout>
     <Label text="{{ message }}" class="message" textWrap="true"/>
-    <canvas:Canvas id="canvas" width="200" height="200"/>
+    <canvas:Canvas id="canvas" width="200" height="200" kind="webgl"/>
     <Label text="~~~"/>
   </StackLayout>
 </Page>

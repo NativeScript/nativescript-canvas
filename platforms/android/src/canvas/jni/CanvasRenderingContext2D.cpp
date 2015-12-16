@@ -550,13 +550,3 @@ extern "C" jlong Java_com_tns_CanvasViewBase_unlockBitmap(JNIEnv* env, jobject _
 	AndroidBitmap_unlockPixels(env, dstBitmap);
 }
 
-extern "C" void NSMain(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-	auto isolate = args.GetIsolate();
-	auto ctx = isolate->GetCurrentContext();
-
-	auto exports = args[1].As<v8::Object>();
-
-	auto create2dTemplate = v8::FunctionTemplate::New(isolate, &CanvasRenderingContext2D::Create);
-	exports->Set(ctx, v8::String::NewFromUtf8(isolate, "create2d"),	create2dTemplate->GetFunction(ctx).ToLocalChecked());
-}

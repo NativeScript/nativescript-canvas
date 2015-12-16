@@ -26,7 +26,8 @@ include $(CLEAR_VARS)
 
 LOCAL_CPPFLAGS += -std=c++11
 LOCAL_MODULE    := canvas
-LOCAL_SRC_FILES := CanvasRenderingContext2D.cpp V8GlobalHelpers.cpp
+LOCAL_SRC_FILES := CanvasRenderingContext2D.cpp V8GlobalHelpers.cpp \
+				CanvasRenderingContextGL.cpp NSMain.cpp
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/include $(LOCAL_PATH)/include/skia/core $(LOCAL_PATH)/include/skia/config
 LOCAL_LDLIBS    := -llog -landroid -lz -lEGL -lGLESv2 -ljnigraphics

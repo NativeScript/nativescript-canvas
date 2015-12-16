@@ -12,6 +12,10 @@ Canvas.prototype.getContext = function getContext(kind) {
 	return this._native.getContext(kind);
 }
 
+Canvas.prototype.requestAnimationFrame = function requestAnimationFrame(callback) {
+	this._native.requestAnimationFrame(callback);
+}
+
 Canvas.prototype._draw = function _draw(canvas) {
 	if (this._drawingContext) {
 		canvas.drawBitmap(this._drawingContext._backbuffer, 0.0, 0.0, null);
@@ -31,7 +35,7 @@ Canvas.prototype.onLayout = function onLayout(left, top, right, bottom) {
 
 Canvas.prototype._createUI = function _createUI() {
 	console.log('Creating CanvasView');
-	var view = canvasViewLib.createView(1, 1, this._context);
+	var view = canvasViewLib.createView(1, 1, this._context, this.kind);
 	view._scriptCanvas = this;
 	this._native = view;
 }
