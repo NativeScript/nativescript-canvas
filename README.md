@@ -1,6 +1,11 @@
+About
+============
+This is a proof-of-concept plugin that enables HTML5 like Canvas API for NativeScript. The code is not production ready and a lot of features are currently missing. You can check the overall progress in [this](https://github.com/NativeScript/nativescript-canvas/issues/1) issue.
+
 Contributing
 ============
-This project encourages hacking, so hack away. Clone the repo and follow the steps to set yourself up for development.
+
+The project encourages hacking, so hack away. Clone the repo and follow the steps to set yourself up for development.
 
 Prerequisites:
 * `npm i -g grunt-cli`
