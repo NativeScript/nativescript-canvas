@@ -1,11 +1,14 @@
 #include "CanvasRenderingContextGL.h"
 #include "V8GlobalHelpers.h"
 #include <GLES2/gl2.h>
+#include <android/log.h>
 #include <string>
 #include <vector>
 #include <ctype.h>
 
 using namespace v8;
+
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO, "NGL", __VA_ARGS__)
 
 CanvasRenderingContextGL::CanvasRenderingContextGL()
 {
@@ -15,11 +18,16 @@ CanvasRenderingContextGL::~CanvasRenderingContextGL()
 {
 }
 
-#define B BooleanValue()
-#define F NumberValue()
-#define I Int32Value()
-#define V(x) x
-#define R(x) args.GetReturnValue().Set(x)
+#define NOP(x)
+#define B(x) args[x]->BooleanValue()
+#define F(x) args[x]->NumberValue()
+#define I(x) args[x]->Int32Value()
+#define S(x) *String::Utf8Value(args[x]->ToString())
+#define V(x) x; if (glGetError() != GL_NO_ERROR) args.GetIsolate()->ThrowException(ConvertToV8String("glGetError says no go"))
+#define R(x) args.GetReturnValue().Set(x); if (glGetError() != GL_NO_ERROR) args.GetIsolate()->ThrowException(ConvertToV8String("glGetError says no go"))
+#define L(x) x NOP
+#define FV(x) (const GLfloat*)(args[x].As<Float32Array>()->Buffer()->GetContents().Data())
+#define IV(x) (const GLint*)(args[x].As<Int32Array>()->Buffer()->GetContents().Data())
 
 struct RegistrationData
 {
@@ -42,44 +50,58 @@ struct Registration
 #define WRAP0(name, RF) \
 	void js##name(const FunctionCallbackInfo<Value>& args) \
 	{ \
+		LOGI("gl"#name"()"); \
 		RF(gl##name()); \
 	} REG(name)
 #define WRAP1(name, T0, RF) \
 	void js##name(const FunctionCallbackInfo<Value>& args) \
 	{ \
-		RF(gl##name(args[0]->T0)); \
+		LOGI("gl"#name"(%s)", S(0)); \
+		RF(gl##name(T0(0))); \
 	} REG(name)
 #define WRAP2(name, T0, T1, RF) \
 	void js##name(const FunctionCallbackInfo<Value>& args) \
 	{ \
-		RF(gl##name(args[0]->T0, args[1]->T1)); \
+		LOGI("gl"#name"(%s, %s)", S(0), S(1)); \
+		RF(gl##name(T0(0), T1(1))); \
 	} REG(name)
 #define WRAP3(name, T0, T1, T2, RF) \
 	void js##name(const FunctionCallbackInfo<Value>& args) \
 	{ \
-		RF(gl##name(args[0]->T0, args[1]->T1, args[2]->T2)); \
+		LOGI("gl"#name"(%s, %s, %s)", S(0), S(1), S(2)); \
+		RF(gl##name(T0(0), T1(1), T2(2))); \
 	} REG(name)
 #define WRAP4(name, T0, T1, T2, T3, RF) \
 	void js##name(const FunctionCallbackInfo<Value>& args) \
 	{ \
-		RF(gl##name(args[0]->T0, args[1]->T1, args[2]->T2, args[3]->T3)); \
+		LOGI("gl"#name"(%s, %s, %s, %s)", S(0), S(1), S(2), S(3)); \
+		RF(gl##name(T0(0), T1(1), T2(2), T3(3))); \
 	} REG(name)
 #define WRAP5(name, T0, T1, T2, T3, T4, RF) \
 	void js##name(const FunctionCallbackInfo<Value>& args) \
 	{ \
-		RF(gl##name(args[0]->T0, args[1]->T1, args[2]->T2, args[3]->T3, args[4]->T4)); \
+		LOGI("gl"#name"(%s, %s, %s, %s, %s)", S(0), S(1), S(2), S(3), S(4)); \
+		RF(gl##name(T0(0), T1(1), T2(2), T3(3), T4(4))); \
+	} REG(name)
+#define WRAP6(name, T0, T1, T2, T3, T4, T5, RF) \
+	void js##name(const FunctionCallbackInfo<Value>& args) \
+	{ \
+		LOGI("gl"#name"(%s, %s, %s, %s, %s, %s)", S(0), S(1), S(2), S(3), S(4), S(5)); \
+		RF(gl##name(T0(0), T1(1), T2(2), T3(3), T4(4), T5(5))); \
 	} REG(name)
 
 #define RESOURCE_CTOR(name) \
 	void jsCreate##name(const FunctionCallbackInfo<Value>& args) \
 	{ \
 		GLuint buf; \
+		LOGI("glGen"#name"()"); \
 		glGen##name##s(1, &buf); \
 		args.GetReturnValue().Set(buf); \
 	} Registration _regCreate##name("Create"#name, &jsCreate##name); \
 	void jsDelete##name(const FunctionCallbackInfo<Value>& args) \
 	{ \
 		GLuint buf = args[0]->Int32Value(); \
+		LOGI("glDelete"#name"()"); \
 		glDelete##name##s(1, &buf); \
 	} Registration _regDelete##name("Delete"#name, &jsDelete##name); \
 	WRAP1(Is##name, I, R)
@@ -122,10 +144,19 @@ WRAP3(StencilOp, I, I, I, V)
 WRAP4(StencilOpSeparate, I, I, I, I, V)
 /////////////////////
 WRAP2(BindBuffer, I, I, V)
-//TODO: bufferData
+
+void jsBufferData(const FunctionCallbackInfo<Value>& args)
+{
+	auto contents = args[1].As<ArrayBufferView>()->Buffer()->GetContents();
+	LOGI("glBufferData(%d, %d, %d, %d)", I(0), contents.ByteLength(), contents.Data(), I(2));
+	glBufferData(I(0), contents.ByteLength(), contents.Data(), I(2));
+}
+Registration _regjsBufferData("BufferData", &jsBufferData);
+
 //TODO: bufferSubData
 RESOURCE_CTOR(Buffer)
 //TODO: getBufferParameter
+WRAP6(VertexAttribPointer, I, I, I, B, I, L((void*) I(5)), V);
 
 /////////////////////
 
@@ -152,10 +183,98 @@ RESOURCE_CTOR(Texture)
 //////////////////////////
 //TODO: all shader stuff
 WRAP2(AttachShader, I, I, V)
+WRAP3(BindAttribLocation, I, I, S, V)
+WRAP1(CompileShader, I, V)
 WRAP0(CreateProgram, R)
 WRAP1(CreateShader, I, R)
 WRAP1(DeleteProgram, I, V)
 WRAP1(DeleteShader, I, V)
+WRAP2(DetachShader, I, I, V)
+WRAP1(EnableVertexAttribArray, I, V)
+WRAP2(GetAttribLocation, I, S, R)
+WRAP2(GetUniformLocation, I, S, R)
+
+WRAP2(Uniform1f, I, F, V)
+WRAP3(Uniform2f, I, F, F, V)
+WRAP4(Uniform3f, I, F, F, F, V)
+WRAP5(Uniform4f, I, F, F, F, F, V)
+WRAP2(Uniform1i, I, I, V)
+WRAP3(Uniform2i, I, I, I, V)
+WRAP4(Uniform3i, I, I, I, I, V)
+WRAP5(Uniform4i, I, I, I, I, I, V)
+
+#define MAKE_UNIFORM(JSType, GLtype, GLfunc, N) \
+void js##GLfunc(const FunctionCallbackInfo<Value>& args) \
+{ \
+	auto buffer = args[1].As<JSType>()->Buffer(); \
+	auto contents = buffer->GetContents(); \
+	gl##GLfunc(I(0), contents.ByteLength() / (N * sizeof(GLtype)), (const GLtype*)contents.Data()); \
+} Registration _reg##GLfunc(#GLfunc, &js##GLfunc);
+
+MAKE_UNIFORM(Float32Array, GLfloat, Uniform1fv, 1)
+MAKE_UNIFORM(Float32Array, GLfloat, Uniform2fv, 2)
+MAKE_UNIFORM(Float32Array, GLfloat, Uniform3fv, 3)
+MAKE_UNIFORM(Float32Array, GLfloat, Uniform4fv, 4)
+MAKE_UNIFORM(Int32Array, GLint, Uniform1iv, 1)
+MAKE_UNIFORM(Int32Array, GLint, Uniform2iv, 2)
+MAKE_UNIFORM(Int32Array, GLint, Uniform3iv, 3)
+MAKE_UNIFORM(Int32Array, GLint, Uniform4iv, 4)
+#undef MAKE_UNIFORM
+
+#define MAKE_UNIFORM_MATRIX(GLfunc, N) \
+void js##GLfunc(const FunctionCallbackInfo<Value>& args) \
+{ \
+	auto buffer = args[2].As<Float32Array>()->Buffer(); \
+	auto contents = buffer->GetContents(); \
+	gl##GLfunc(I(0), contents.ByteLength() / (N * N * sizeof(GLfloat)), B(1), (const GLfloat*)contents.Data()); \
+} Registration _reg##GLfunc(#GLfunc, &js##GLfunc);
+
+MAKE_UNIFORM_MATRIX(UniformMatrix2fv, 2)
+MAKE_UNIFORM_MATRIX(UniformMatrix3fv, 3)
+MAKE_UNIFORM_MATRIX(UniformMatrix4fv, 4)
+#undef MAKE_UNIFORM_MATRIX
+
+void jsGetShaderInfoLog(const FunctionCallbackInfo<Value>& args)
+{
+	GLint logLength = 0;
+	glGetShaderiv(I(0), GL_INFO_LOG_LENGTH, &logLength);
+	std::vector<char> log;
+	log.resize(logLength);
+	glGetShaderInfoLog(I(0), logLength, NULL, &log[0]);
+	R(ConvertToV8String(&log[0]));
+}
+Registration _regjsGetShaderInfoLog("GetShaderInfoLog", &jsGetShaderInfoLog);
+
+void jsGetShaderParameter(const FunctionCallbackInfo<Value>& args)
+{
+	GLint result;
+	glGetShaderiv(I(0), I(1), &result);
+	R(result);
+}
+Registration _regjsGetShaderParameter("GetShaderParameter", &jsGetShaderParameter);
+
+void jsGetProgramParameter(const FunctionCallbackInfo<Value>& args)
+{
+	GLint result;
+	glGetProgramiv(I(0), I(1), &result);
+	R(result);
+}
+Registration _regjsGetProgramParameter("GetProgramParameter", &jsGetProgramParameter);
+
+WRAP1(IsProgram, I, R)
+WRAP1(IsShader, I, R)
+WRAP1(LinkProgram, I, V)
+
+void jsShaderSource(const FunctionCallbackInfo<Value>& args)
+{
+	String::Utf8Value program(args[1]);
+	const char* programCstr = *program;
+	glShaderSource(args[0]->Int32Value(), 1, &programCstr, NULL);
+}
+Registration _regjsShaderSource("ShaderSource", &jsShaderSource);
+
+WRAP1(UseProgram, I, V)
+WRAP1(ValidateProgram, I, V)
 
 //////////////////////
 WRAP1(Clear, I, V)
@@ -179,6 +298,7 @@ WRAP0(Flush, V)
 #undef WRAP2
 #undef WRAP4
 #undef WRAP5
+#undef WRAP6
 #undef RESOURCE_CTOR
 
 void Export(Isolate* isolate, Local<ObjectTemplate>& templ, const char* name, FunctionCallback impl)
@@ -190,7 +310,6 @@ void CanvasRenderingContextGL::Create(const FunctionCallbackInfo<Value>& args)
 {
 	auto isolate = args.GetIsolate();
 	HandleScope scope(isolate);
-
 
 	Local<ObjectTemplate> contextTemplate = ObjectTemplate::New(isolate);
 
@@ -524,6 +643,7 @@ void CanvasRenderingContextGL::Create(const FunctionCallbackInfo<Value>& args)
 	SET_CONSTANT(RENDERBUFFER_BINDING);
 	SET_CONSTANT(MAX_RENDERBUFFER_SIZE);
 	SET_CONSTANT(INVALID_FRAMEBUFFER_OPERATION);
+
 
 	//SET_CONSTANT(UNPACK_FLIP_Y_WEBGL);
 	//SET_CONSTANT(UNPACK_PREMULTIPLY_ALPHA_WEBGL);

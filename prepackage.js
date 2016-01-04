@@ -37,7 +37,7 @@ process.chdir(path.join(projectDir, 'platforms/android/src/canvas'));
 Qexec('npm install')
 	.then(function () { return Qexec('grunt'); })
 	.then(function () { return Qexec(findTool('ANDROID_NDK_PATH', '', 'ndk-build', '.cmd') + ' all'); })
-	.then(function () { return Qexec(findTool('ANT_HOME', 'bin', 'ant', '.bat') + ' release'); })
+	.then(function () { return Qexec(findTool('ANT_HOME', 'bin', 'ant', '.bat') + ' clean release'); })
 	.then(function() {
 		if (process.platform !== 'darwin') {
 			return;

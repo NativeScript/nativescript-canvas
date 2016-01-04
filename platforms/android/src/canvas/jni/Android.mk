@@ -24,7 +24,7 @@ include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 
-LOCAL_CPPFLAGS += -std=c++11
+LOCAL_CPPFLAGS += -std=c++11 -Wall -Wextra -Wno-unused-parameter
 LOCAL_MODULE    := canvas
 LOCAL_SRC_FILES := CanvasRenderingContext2D.cpp V8GlobalHelpers.cpp \
 				CanvasRenderingContextGL.cpp NSMain.cpp

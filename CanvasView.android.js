@@ -144,19 +144,6 @@ var CanvasViewImpl = {
 _.extend(CanvasViewImpl, EventableImpl);
 var CanvasView = com.tns.CanvasViewBase.extend(CanvasViewImpl);
 
-var GLSurfaceRenderer = android.opengl.GLSurfaceView.Renderer.extend({
-    onDrawFrame: function (gl10) {
-        this._view.executeRafs();
-    },
-
-    onSurfaceChanged: function (gl10, width, height) {
-       // this._context.__surfaceChanged(width, height);
-    },
-
-    onSurfaceCreated: function (gl10, config) {
-       // this._context.__surfaceCreated();
-    }
-});
 
 var GLViewImpl = {
     getContext: function (kind) {
@@ -177,13 +164,29 @@ var GLViewImpl = {
     }
 };
 _.extend(GLViewImpl, EventableImpl);
-var GLView = com.tns.GLViewBase.extend(GLViewImpl);
+//var GLView = com.tns.GLViewBase.extend(GLViewImpl);
+
+var GLSurfaceRenderer = android.opengl.GLSurfaceView.Renderer.extend({
+    onDrawFrame: function (gl10) {
+        //this._view.executeRafs();
+       android.opengl.GLES20.glClear(android.opengl.GLES20.GL_COLOR_BUFFER_BIT);
+    },
+
+    onSurfaceChanged: function (gl10, width, height) {
+       android.opengl.GLES20.glViewport(0, 0, width, height);
+    },
+
+    onSurfaceCreated: function (gl10, config) {
+       android.opengl.GLES20.glClearColor(0.1, 0.2, 0.3, 1.0);
+    }
+});
 
 exports.createView = function createView(width, height, context, kind) {
     if (kind === 'webgl') {
         var renderer = new GLSurfaceRenderer();
-        var glview = new GLView(context, renderer);
+        var glview = new com.tns.GLViewBase(context, renderer);
         renderer._view = glview;
+        _.extend(glview, GLViewImpl);
         return glview;
     } else {
         return new CanvasView(context);
